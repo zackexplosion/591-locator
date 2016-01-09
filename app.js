@@ -1,4 +1,13 @@
 "use strict";
+var config = require('./config.json');
+const CHANENEL = config.CHANENEL || "#test";
+// check per 5 minutes
+const CHECK_FREQ = parseInt(config.CHECK_FREQ_MIN) * 1000 * 60 || 1000 * 60 * 1;
+
+
+console.log('CHANENEL : ', CHANENEL);
+console.log('CHECK_FREQ : ', CHECK_FREQ , 'ms');
+
 const API_ENDPOINT = 'http://rent.591.com.tw/index.php?module=search&action=rslist&is_new_list=1&type=1&searchtype=1&region=3&listview=img&rentprice=,20000&area=10,&floor=,1&order=posttime&orderType=desc';
 const WEB_HOOK_API = 'https://hooks.slack.com/services/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';
 const WEB_BASE_URI = 'http://www.591.com.tw/';
@@ -20,7 +29,7 @@ const parse = function (url, callback) {
 }
 
 const notification = function(objects){
-
+  console.log('有新物件，傳送通知中');
   for(let i in objects){
     var c = objects[i];
     let message = '';
@@ -32,16 +41,17 @@ const notification = function(objects){
     message += '• ' + c.price  + "\n";
     message += '• ' + c.size + "\n";
     // message += '--------------------' + "\n";
+    console.log(message);
     slack.webhook({
-      channel: "#general",
+      // channel: "#test",
+      channel: CHANENEL,
       username: "591",
       text: message
     }, function(err, response) {
-      // console.log(response);
+      console.log(response);
     });
   }
 }
-
 
 const get_objects = function(main){
   // console.log(main);
@@ -79,12 +89,11 @@ const get_objects = function(main){
 }
 
 var last_objects;
-// check per 5 minutes
-var check_freq = 1000 * 60 * 5;
+
 
 // the runner
-var checker = function(){
-  setTimeout(()=>{
+var runner = function(){
+  let checker = function(){
     parse(API_ENDPOINT, (result)=>{
       // result = result.replace(/(\r\n|\n|\r)/gm,"");
       result = JSON.parse(result);
@@ -94,24 +103,29 @@ var checker = function(){
       console.log('request done.');
       let objects = get_objects(result.main);
 
-      if( typeof last_objects !== 'undefined' && JSON.stringify(last_objects) !== JSON.stringify(object) ){
+
+      // if new object found send notification
+      if( typeof last_objects !== 'undefined'){
         let new_objects = [];
         for(var i in objects){
           if( typeof last_objects[i] === 'undefined'){
             new_objects.push(objects[i]);
           }
         }
-        console.log('有新物件，傳送通知中');
-        notification(new_objects);
+
+        if( new_objects.length > 0){
+          notification(new_objects);
+        }
       }
 
       last_objects = objects;
-      checker();
+      runner();
     });
-  }, check_freq);
+  }
+  setTimeout( checker, CHECK_FREQ);
 }
 
 
-// start checker
-checker();
+// start runner
+runner();
 
