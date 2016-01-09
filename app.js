@@ -1,24 +1,35 @@
 "use strict";
-const config = require('./config.json');
+var config = require('./config.json');
 const CHANENEL = config.CHANENEL || "#test";
 // check per 5 minutes
 const CHECK_FREQ = parseInt(config.CHECK_FREQ) * 1000 || 1000 * 60 * 1;
 const DEV = config.DEV || false;
 
-
-
-console.log('CHANENEL : ', CHANENEL);
-console.log('CHECK_FREQ : ', CHECK_FREQ , 'ms');
-console.log('DEV : ', DEV);
-
-const API_ENDPOINT = 'http://rent.591.com.tw/index.php?module=search&action=rslist&is_new_list=1&type=1&searchtype=1&region=3&listview=img&rentprice=,20000&area=10,&floor=,1&order=posttime&orderType=desc';
+var API_ENDPOINT = 'http://rent.591.com.tw/index.php?module=search&action=rslist&is_new_list=1&type=1&searchtype=1&region=3&listview=img&rentprice=,20000&area=10,&floor=,1&order=posttime&orderType=desc';
 const WEB_HOOK_API = 'https://hooks.slack.com/services/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';
 const WEB_BASE_URI = 'http://www.591.com.tw/';
+
+
 const
+  process = require('process'),
   request = require('request'),
   cheerio = require('cheerio'),
   Slack = require('slack-node');
   // $ = require('jquery');
+
+if(process.argv[2]){
+  API_ENDPOINT = process.argv[2];
+  // let api = process.argv[2].split('=');
+  // if( api[0] === 'API'){
+  //   API_ENDPOINT = api[1];
+  // }
+}
+
+console.log('CHANENEL : ', CHANENEL);
+console.log('CHECK_FREQ : ', CHECK_FREQ , 'ms');
+console.log('API_ENDPOINT : ', API_ENDPOINT);
+console.log('SLACK_WEB_HOOK_API : ', WEB_HOOK_API);
+console.log('DEV : ', DEV);
 
 const slack = new Slack();
 slack.setWebhook(WEB_HOOK_API);
