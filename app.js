@@ -79,7 +79,8 @@ const get_objects = function(main){
 }
 
 var last_objects;
-var check_freq = 1000;
+// check per 5 minutes
+var check_freq = 1000 * 60 * 5;
 
 // the runner
 var checker = function(){
