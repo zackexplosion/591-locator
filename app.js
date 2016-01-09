@@ -2,11 +2,13 @@
 var config = require('./config.json');
 const CHANENEL = config.CHANENEL || "#test";
 // check per 5 minutes
-const CHECK_FREQ = parseInt(config.CHECK_FREQ_MIN) * 1000 * 60 || 1000 * 60 * 1;
+const CHECK_FREQ = parseInt(config.CHECK_FREQ_MIN) * 1000 || 1000 * 60 * 1;
+const DEV = config.DEV || false;
 
 
 console.log('CHANENEL : ', CHANENEL);
 console.log('CHECK_FREQ : ', CHECK_FREQ , 'ms');
+console.log('DEV : ', DEV);
 
 const API_ENDPOINT = 'http://rent.591.com.tw/index.php?module=search&action=rslist&is_new_list=1&type=1&searchtype=1&region=3&listview=img&rentprice=,20000&area=10,&floor=,1&order=posttime&orderType=desc';
 const WEB_HOOK_API = 'https://hooks.slack.com/services/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';
@@ -29,7 +31,7 @@ const parse = function (url, callback) {
 }
 
 const notification = function(objects){
-  console.log('有新物件，傳送通知中');
+  console.log('有新物件，傳送通知中', objects);
   for(let i in objects){
     var c = objects[i];
     let message = '';
@@ -41,14 +43,16 @@ const notification = function(objects){
     message += '• ' + c.price  + "\n";
     message += '• ' + c.size + "\n";
     // message += '--------------------' + "\n";
-    console.log(message);
+    // console.log(message);
     slack.webhook({
       // channel: "#test",
       channel: CHANENEL,
       username: "591",
       text: message
     }, function(err, response) {
-      console.log(response);
+      if(err){
+        console.log(err);
+      }
     });
   }
 }
@@ -69,10 +73,11 @@ const get_objects = function(main){
     // *************************
     // ***** ONLY for test *****
     // *************************
-
-    // if(i < 2){
-    //   title = current.find('a').attr('title') + new Date();
-    // }
+    if(DEV){
+      if(i < 2){
+        title = current.find('a').attr('title') + new Date();
+      }
+    }
 
 
     objects[title] = {
