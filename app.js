@@ -11,87 +11,101 @@ const
 const slack = new Slack();
 slack.setWebhook(WEB_HOOK_API);
 
-
-
 // functions
 const parse = function (url, callback) {
   console.log('start request', new Date());
   request(url, function (error, response, body) {
-
     callback(body);
-    // let result;
-    // result = JSON.parse(body);
-    // callback(result);
-
-    // console.log(response);
-
-
-
-    // $('.question-summary .question-hyperlink').each(function () {
-    //     console.info($(this).text());
-    // });
   })
 }
-var last_result;
-var check_freq = 1000;
 
-var notification = function(message){
-  console.log('有新物件，傳送通知中');
-  slack.webhook({
-    channel: "#test",
-    username: "591",
-    text: message
-  }, function(err, response) {
-    // console.log(response);
-  });
+const notification = function(objects){
+
+  for(let i in objects){
+    var c = objects[i];
+    let message = '';
+    message += ' *發現有新房子，快來看看喔！*' + "\n" ;
+    message +=  new Date() + "\n" ;
+    message += c.link + "\n" ;
+    message += '• ' + c.title + "\n" ;
+    message += '• ' + c.address  + "\n";
+    message += '• ' + c.price  + "\n";
+    message += '• ' + c.size + "\n";
+    // message += '--------------------' + "\n";
+    slack.webhook({
+      channel: "#general",
+      username: "591",
+      text: message
+    }, function(err, response) {
+      // console.log(response);
+    });
+  }
 }
 
-var get_objects = function(main){
+
+const get_objects = function(main){
   // console.log(main);
-  var objects = [];
+  let objects = {};
   let $ = cheerio.load(main, {
     decodeEntities: false
   });
 
   let node = $('.shList');
 
-  for(var i = 0; i < node.length; i++){
+  for(let i = 0; i < node.length; i++){
     let current = $(node.get(i));
-    objects.push({
+    let title = current.find('a').attr('title');
+
+    // *************************
+    // ***** ONLY for test *****
+    // *************************
+
+    // if(i < 2){
+    //   title = current.find('a').attr('title') + new Date();
+    // }
+
+
+    objects[title] = {
       link: WEB_BASE_URI + current.find('a').attr('href'),
       title: current.find('a').attr('title'),
       address: current.find('p:nth-child(2)').text(),
-      price: current.find('.price strong').text()
-    });
+      price: current.find('.price strong').text(),
+      size: current.find('.rentByArea').text().replace(/(\r\n|\n|\r|\t)/gm,"").trim()
+    }
   }
 
-  console.log(objects);
+  // console.log(objects);
+  return objects;
 }
 
+var last_objects;
+var check_freq = 1000;
 
 // the runner
 var checker = function(){
   setTimeout(()=>{
     parse(API_ENDPOINT, (result)=>{
+      // result = result.replace(/(\r\n|\n|\r)/gm,"");
       result = JSON.parse(result);
 
-      var object = result.main;
-
-      // *************************
-      // ***** ONLY for test *****
-      // *************************
-      object += 'hello' + new Date();
+      let object = result.main;
 
       console.log('request done.');
-      var objects = get_objects(result.main);
+      let objects = get_objects(result.main);
 
-      if( typeof last_result !== 'undefined' && last_result !== object){
-        var new_objects = [];
+      if( typeof last_objects !== 'undefined' && JSON.stringify(last_objects) !== JSON.stringify(object) ){
+        let new_objects = [];
+        for(var i in objects){
+          if( typeof last_objects[i] === 'undefined'){
+            new_objects.push(objects[i]);
+          }
+        }
+        console.log('有新物件，傳送通知中');
         notification(new_objects);
       }
 
-      last_result = result.main;
-      // checker();
+      last_objects = objects;
+      checker();
     });
   }, check_freq);
 }
