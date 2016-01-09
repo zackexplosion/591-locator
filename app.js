@@ -1,9 +1,10 @@
 "use strict";
-var config = require('./config.json');
+const config = require('./config.json');
 const CHANENEL = config.CHANENEL || "#test";
 // check per 5 minutes
-const CHECK_FREQ = parseInt(config.CHECK_FREQ_MIN) * 1000 || 1000 * 60 * 1;
+const CHECK_FREQ = parseInt(config.CHECK_FREQ) * 1000 || 1000 * 60 * 1;
 const DEV = config.DEV || false;
+
 
 
 console.log('CHANENEL : ', CHANENEL);
