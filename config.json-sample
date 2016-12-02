@@ -1,0 +1,6 @@
+{
+	"DEV": FALSE,
+	"CHANENEL": "#general",
+	"CHECK_FREQ": "60",
+	"WEB_HOOK_API": "PATSE YOUR SLACK HOOK API"
+}
