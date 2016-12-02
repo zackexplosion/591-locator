@@ -107,7 +107,7 @@ const get_objects = function(main){
 
 var last_objects;
 
-let checker = function(){
+let checker = function(cb){
   parse(API_ENDPOINT, (result)=>{
     // result = result.replace(/(\r\n|\n|\r)/gm,"");
     result = JSON.parse(result);
@@ -132,11 +132,18 @@ let checker = function(){
       }
     }
 
-    last_objects = objects;
-    runner();
-  });
+    last_objects = objects
+
+    if ( typeof cb === 'function') {
+      cb(objects)
+    }
+
+  })
 }
 
-checker();
+checker( _objects =>{
+  console.log('objects', _objects)
+})
+
 setInterval(checker, CHECK_FREQ)
 
