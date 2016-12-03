@@ -21,4 +21,9 @@
 # 啟動
 建議用 [forever](https://github.com/foreverjs/forever) 之類的套件
 
-`forever start app.js`
+## 設定搜尋條件
+複製按下條件之後的第一個網址
+![](http://i.imgur.com/9aCDl0F.png)
+
+把網址加在啟動指令後面
+`forever start app.js https://rent.591.com.tw/home/search/rsList?is_new_list=1&type=1&kind=0&searchtype=1&region=1&rentprice=4,`
