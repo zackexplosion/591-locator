@@ -117,12 +117,19 @@ let checker = function(cb){
   logger.info('requesting.....')
   parse(API_ENDPOINT, (result)=>{
     // result = result.replace(/(\r\n|\n|\r)/gm,"");
-    result = JSON.parse(result);
+    var objects
+    try {
+      result = JSON.parse(result)
+      objects = get_objects(result.main)
+    } catch (error) {
+      logger.error('json paring failed', error)
+      return false
+    }
 
-    let object = result.main;
 
+    // let object = result.main;
+    // let objects = get_objects(result.main);
     logger.info('request done.')
-    let objects = get_objects(result.main);
 
 
     // if new object found send notification
