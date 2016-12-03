@@ -1,6 +1,11 @@
-"use strict";
-var config = require('./config.json');
+"use strict"
+// logger
+const log4js = require('log4js')
+const logger = log4js.getLogger()
+
+const config = require('./config.json');
 const CHANENEL = config.CHANENEL || "#test";
+
 // check per 5 minutes
 const CHECK_FREQ = parseInt(config.CHECK_FREQ) * 1000 || 1000 * 60 * 1;
 const DEV = config.DEV || false;
@@ -25,11 +30,11 @@ if(process.argv[2]){
   // }
 }
 
-console.log('CHANENEL : ', CHANENEL);
-console.log('CHECK_FREQ : ', CHECK_FREQ , 'ms');
-console.log('API_ENDPOINT : ', API_ENDPOINT);
-console.log('SLACK_WEB_HOOK_API : ', WEB_HOOK_API);
-console.log('DEV : ', DEV);
+logger.info('CHANENEL : ', CHANENEL);
+logger.info('CHECK_FREQ : ', CHECK_FREQ , 'ms');
+logger.info('API_ENDPOINT : ', API_ENDPOINT);
+logger.info('SLACK_WEB_HOOK_API : ', WEB_HOOK_API);
+logger.info('DEV : ', DEV);
 
 const slack = new Slack();
 slack.setWebhook(WEB_HOOK_API);
@@ -42,7 +47,9 @@ const parse = function (url, callback) {
 }
 
 const notification = function(objects){
-  console.log('有新物件，傳送通知中', objects);
+
+  logger.info('有新物件，傳送通知中', objects)
+
   for(let i in objects){
     var c = objects[i];
     let message = '';
@@ -54,7 +61,7 @@ const notification = function(objects){
     message += '• ' + c.price  + "\n";
     message += '• ' + c.size + "\n";
     // message += '--------------------' + "\n";
-    // console.log(message);
+    // logger.info(message);
     slack.webhook({
       // channel: "#test",
       channel: CHANENEL,
@@ -62,14 +69,14 @@ const notification = function(objects){
       text: message
     }, function(err, response) {
       if(err){
-        console.log(err);
+        logger.info(err);
       }
     });
   }
 }
 
 const get_objects = function(main){
-  // console.log(main);
+  // logger.info(main);
   let objects = {};
   let $ = cheerio.load(main, {
     decodeEntities: false
@@ -100,21 +107,21 @@ const get_objects = function(main){
     }
   }
 
-  // console.log(objects);
+  // logger.info(objects);
   return objects;
 }
 
 var last_objects;
 
 let checker = function(cb){
-  console.log(new Date(), 'start request')
+  logger.info('requesting.....')
   parse(API_ENDPOINT, (result)=>{
     // result = result.replace(/(\r\n|\n|\r)/gm,"");
     result = JSON.parse(result);
 
     let object = result.main;
 
-    console.log(new Date(), 'request done.')
+    logger.info('request done.')
     let objects = get_objects(result.main);
 
 
@@ -123,12 +130,14 @@ let checker = function(cb){
       let new_objects = [];
       for(var i in objects){
         if( typeof last_objects[i] === 'undefined'){
-          new_objects.push(objects[i]);
+          new_objects.push(objects[i])
         }
       }
 
-      if( new_objects.length > 0){
-        notification(new_objects);
+      if ( new_objects.length > 0){
+        notification(new_objects)
+      } else {
+        logger.info('no new object found')
       }
     }
 
@@ -138,12 +147,15 @@ let checker = function(cb){
       cb(last_objects)
     }
 
+    setTimeout(checker, CHECK_FREQ)
   })
 }
 
 checker( _objects =>{
-  console.log('objects', _objects)
+  logger.info('objects')
+  logger.info(_objects)
 })
 
-setInterval(checker, CHECK_FREQ)
+
+// setInterval(checker, CHECK_FREQ)
 
