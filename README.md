@@ -19,7 +19,7 @@
 `cp config.json-sample config.json`
 
 # 啟動
-建議用 [forever](https://github.com/foreverjs/forever) 之類的套件
+建議用 [forever](https://github.com/foreverjs/forever) 之類的工具將程式跑在背景，不然 `node app.js` 關掉就停了
 
 ## 設定搜尋條件
 
