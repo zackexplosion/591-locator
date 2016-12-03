@@ -2,5 +2,6 @@
 	"DEV": FALSE,
 	"CHANENEL": "#general",
 	"CHECK_FREQ": "60",
-	"WEB_HOOK_API": "PATSE YOUR SLACK HOOK API"
+	"WEB_HOOK_API": "PATSE YOUR SLACK HOOK API",
+	"API_ENDPOINT": "http://rent.591.com.tw/index.php?module=search&action=rslist&is_new_list=1&type=1&searchtype=1&region=3&listview=img&rentprice=,20000&area=10,&floor=,1&order=posttime&orderType=desc"
 }

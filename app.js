@@ -5,7 +5,7 @@ const CHANENEL = config.CHANENEL || "#test";
 const CHECK_FREQ = parseInt(config.CHECK_FREQ) * 1000 || 1000 * 60 * 1;
 const DEV = config.DEV || false;
 
-var API_ENDPOINT = 'http://rent.591.com.tw/index.php?module=search&action=rslist&is_new_list=1&type=1&searchtype=1&region=3&listview=img&rentprice=,20000&area=10,&floor=,1&order=posttime&orderType=desc'
+var API_ENDPOINT = config.API_ENDPOINT
 const WEB_HOOK_API = config.WEB_HOOK_API
 const WEB_BASE_URI = 'http://www.591.com.tw/'
 
@@ -36,7 +36,6 @@ slack.setWebhook(WEB_HOOK_API);
 
 // functions
 const parse = function (url, callback) {
-  console.log('start request', new Date());
   request(url, function (error, response, body) {
     callback(body);
   })
@@ -108,13 +107,14 @@ const get_objects = function(main){
 var last_objects;
 
 let checker = function(cb){
+  console.log(new Date(), 'start request')
   parse(API_ENDPOINT, (result)=>{
     // result = result.replace(/(\r\n|\n|\r)/gm,"");
     result = JSON.parse(result);
 
     let object = result.main;
 
-    console.log('request done.');
+    console.log(new Date(), 'request done.')
     let objects = get_objects(result.main);
 
 
@@ -135,7 +135,7 @@ let checker = function(cb){
     last_objects = objects
 
     if ( typeof cb === 'function') {
-      cb(objects)
+      cb(last_objects)
     }
 
   })

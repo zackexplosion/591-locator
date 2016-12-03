@@ -27,3 +27,7 @@
 
 把網址加在啟動指令後面
 `forever start app.js "https://rent.591.com.tw/home/search/rsList?is_new_list=1&type=1&kind=0&searchtype=1&region=1&rentprice=4,"`
+
+或是直接修改設定檔的 API_ENDPOINT，就可以不加參數啟動了
+
+`forever start app.js`
