@@ -5,6 +5,8 @@
 
 先弄好 [Slack Team](http://www.playpcesor.com/2015/06/slack.html) 並且申請 [incoming-webhooks](https://slack.com/apps/A0F7XDUAZ-incoming-webhooks)
 
+## Node.js
+開發用 5.4 的版本，不過應該 4.0 以上都OK
 
 # 安裝
 
