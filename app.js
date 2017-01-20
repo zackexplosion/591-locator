@@ -42,7 +42,10 @@ slack.setWebhook(WEB_HOOK_API);
 // functions
 const parse = function (url, callback) {
   request(url, function (error, response, body) {
-    callback(body);
+    if(error){
+      logger.error(error)
+    }
+    callback(body)
   })
 }
 
@@ -117,7 +120,7 @@ let checker = function(cb){
   logger.info('requesting.....')
   parse(API_ENDPOINT, (result)=>{
     // result = result.replace(/(\r\n|\n|\r)/gm,"");
-    var objects
+    var object
     try {
       result = JSON.parse(result)
       objects = get_objects(result.main)
