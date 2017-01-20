@@ -45,6 +45,11 @@ const parse = function (url, callback) {
     if(error){
       logger.error(error)
     }
+
+    if(response.statusCode !== 200) {
+      logger.error('http status code return :', response.statusCode)
+    }
+
     callback(body)
   })
 }
