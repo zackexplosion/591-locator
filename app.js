@@ -111,7 +111,7 @@ const get_objects = function(main){
   return objects;
 }
 
-var last_objects;
+var last_objects = {}
 
 let checker = function(cb){
   logger.info('requesting.....')
@@ -133,7 +133,7 @@ let checker = function(cb){
 
 
     // if new object found send notification
-    if( typeof last_objects !== 'undefined'){
+    // if( typeof last_objects !== 'undefined'){
       let new_objects = [];
       for(var i in objects){
         if( typeof last_objects[i] === 'undefined'){
@@ -146,7 +146,7 @@ let checker = function(cb){
       } else {
         logger.info('no new object found')
       }
-    }
+    // }
 
     last_objects = objects
 
