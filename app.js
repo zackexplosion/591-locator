@@ -120,13 +120,13 @@ let checker = function(cb){
   logger.info('requesting.....')
   parse(API_ENDPOINT, (result)=>{
     // result = result.replace(/(\r\n|\n|\r)/gm,"");
-    var object
+    var objects = {}
     try {
       result = JSON.parse(result)
       objects = get_objects(result.main)
     } catch (error) {
       logger.error('json paring failed', error)
-      return false
+      // return false
     }
 
 
